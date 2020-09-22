@@ -2,7 +2,6 @@ import {
   CommandArgs,
   CommandResult,
   help,
-  success,
   AppCommand,
   shortName,
   longName,
@@ -30,6 +29,7 @@ export default class ApiTokenListCommand extends AppCommand {
   principalType: PrincipalType;
 
   async run(client: AppCenterClient): Promise<CommandResult> {
+"HEAD"
     validatePrincipalType(this.principalType);
     const tokenMessaging = `Getting ${this.principalType} API tokens ...`;
 
@@ -58,6 +58,8 @@ export default class ApiTokenListCommand extends AppCommand {
           return failure(ErrorCodes.NotLoggedIn, `${this.principalType} could not be found`);
       }
     }
+
+    origin/this.app-tokens-regenerate-cli
 
     out.table(
       out.getCommandOutputTableOptions(["ID", "Description", "Type", "Created At"]),

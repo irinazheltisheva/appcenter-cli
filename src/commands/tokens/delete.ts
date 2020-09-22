@@ -5,8 +5,6 @@ import {
   CommandResult,
   help,
   success,
-  failure,
-  ErrorCodes,
   position,
   required,
   name,
@@ -14,12 +12,13 @@ import {
   shortName,
   longName,
   hasArg,
-  defaultValue,
+  defaultValue, ErrorCodes, failure
 } from "../../util/commandline";
 import { out, prompt } from "../../util/interaction";
-import { AppCenterClient, clientRequest } from "../../util/apis";
-import { DefaultApp } from "../../util/profile";
+import { AppCenterClient,  clientRequest } from "../../util/apis";
 import { PrincipalType, validatePrincipalType as validateTokenPrincipal } from "../../util/misc/principal-type";
+import {  } from "../../util/profile";
+import { DefaultApp } from "../../util/profile";
 
 @help("Delete an API token")
 export default class TokenDeleteCommand extends AppCommand {
@@ -42,7 +41,6 @@ export default class TokenDeleteCommand extends AppCommand {
 
   async run(client: AppCenterClient): Promise<CommandResult> {
     validateTokenPrincipal(this.principalType);
-    const tokenMessaging = `Deleting ${this.principalType} API token ...`;
     const confirmation = await prompt.confirm(`Do you really want to delete the ${this.principalType} API token with ID "${this.id}"`);
 
     if (!confirmation) {
@@ -50,10 +48,14 @@ export default class TokenDeleteCommand extends AppCommand {
       return success();
     }
 
-    let deleteTokenResponse;
+"HEAD"
     if (this.principalType === PrincipalType.USER) {
-      deleteTokenResponse = await out.progress(
-        tokenMessaging,
+
+    if (confirmation) {
+      const newLocal = this.app;
+      const deleteTokenResponse = await out.progress(
+        "Deleting token ...",
+    origin/newLocal-tokens-regenerate-cli
         clientRequest<null>((cb) => client.userApiTokens.deleteMethod(this.id, cb))
       );
     } else if (this.principalType === PrincipalType.APP) {

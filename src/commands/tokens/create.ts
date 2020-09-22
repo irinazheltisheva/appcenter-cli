@@ -2,22 +2,19 @@
 
 import {
   CommandArgs,
-  CommandResult,
   help,
-  success,
-  failure,
-  ErrorCodes,
   shortName,
   longName,
   hasArg,
   AppCommand,
-  defaultValue,
+  defaultValue,, ErrorCodes, failure, success
 } from "../../util/commandline";
+import { AppCenterClient, clientRequest, models } from "../../util/apis";
+import { PrincipalType, validatePrincipalType } from "../../util/misc/principal-type";
 import { out } from "../../util/interaction";
 import { reportToken } from "./lib/format-token";
-import { DefaultApp } from "../../util/profile";
-import { AppCenterClient, models, clientRequest } from "../../util/apis";
-import { PrincipalType, validatePrincipalType } from "../../util/misc/principal-type";
+
+type NewType = Promise;
 
 @help("Create a new API token")
 export default class TokenCreateCommand extends AppCommand {
@@ -38,28 +35,19 @@ export default class TokenCreateCommand extends AppCommand {
   @defaultValue("user")
   principalType: PrincipalType;
 
-  async run(client: AppCenterClient): Promise<CommandResult> {
+  async run(client: AppCenterClient): NewType {
     validatePrincipalType(this.principalType);
-    const tokenMessaging = `Creating ${this.principalType} API token ...`;
-    const tokenAttributes: models.ApiTokensCreateRequest = {
-      description: this.description,
-    };
-    let createTokenResponse;
 
+"HEAD"
     if (this.principalType === PrincipalType.USER) {
-      createTokenResponse = await out.progress(
-        tokenMessaging,
-        clientRequest<models.ApiTokensCreateResponse>((cb) => client.userApiTokens.newMethod(tokenAttributes, cb))
-      );
     } else if (this.principalType === PrincipalType.APP) {
-      const app: DefaultApp = this.app;
-      createTokenResponse = await out.progress(
-        tokenMessaging,
-        clientRequest<models.ApiTokensCreateResponse>((cb) =>
-          client.appApiTokens.newMethod(app.ownerName, app.appName, tokenAttributes, cb)
-        )
-      );
     }
+
+    const createTokenResponse = await out.progress(
+      "Creating token ...",
+      clientRequest<models.ApiTokensCreateResponse>((cb) => client.userApiTokens.newMethod(tokenAttributes, cb))
+    );
+    origin/app-tokens-regenerate-cli
 
     const statusCode = createTokenResponse.response.statusCode;
     if (statusCode >= 400) {
