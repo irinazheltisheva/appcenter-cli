@@ -122,7 +122,7 @@
     "jsonwebtoken": "8.5.1",
     "jszip": "3.5.0",
     "lodash": "4.17.19",
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "mkdirp": "1.0.4",
     "ms-rest": "2.5.4",
     "node-fetch": "^2.6.0",
